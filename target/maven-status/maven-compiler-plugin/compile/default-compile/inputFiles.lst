@@ -1,14 +1,6 @@
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\dto\Car.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\exceptions\CarBadResponseException.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\repositories\CarRepository.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\repositories\PartRepository.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\controllers\CarGarageController.java
 C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\dto\Car.java
 C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\repositories\CarRepo.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\CarGarageApplication.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\controllers\CarGarageController.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\exceptions\CarBadResponseException.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\dto\Part.java
-C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\cargarage\exceptions\CarNotFoundException.java
+C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\exceptions\CarBadResponseException.java
+C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\controllers\CarGarageController.java
 C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\exceptions\CarNotFoundException.java
 C:\Users\Adrian\git\car-garage\src\main\java\com\assignment\garage\CarGarageApp.java

@@ -1,5 +1,6 @@
 package com.assignment.garage.dto;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,9 +29,11 @@ public class Car {
     private Long carId;
 
     @NonNull
+    @Column(name = "car_make")
     private String carMake;
     
     @NonNull
+    @Column(name = "car_type")
     private String carType;
 
 //	public Long getCarId()
