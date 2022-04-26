@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
 import com.assignment.garage.dto.Car;
+import com.assignment.garage.exceptions.CarBadResponseException;
 import com.assignment.garage.exceptions.CarNotFoundException;
 import com.assignment.garage.repositories.CarRepo;
 
@@ -29,8 +30,6 @@ public class CarGarageController {
 	CarRepo carRepo;
 	
 	
-	
-	
 	@GetMapping
 	public List<Car> getAllCars() {
 	    return carRepo.findAll();
@@ -40,35 +39,16 @@ public class CarGarageController {
 	public Car getCarById(@PathVariable(value="carId") Long carId) {
 	    return carRepo.findById(carId).get();
 	}
-	
-	
-	
-	
-	
+		
 	@PostMapping
 	public Car createCar(@RequestBody @Valid Car car) {
 	    return carRepo.save(car);
 	}
-	
-	
-	
-	
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	class InvalidRequestException extends RuntimeException {
-	    public InvalidRequestException(String s) {
-	        super(s);
-	    }
-	}
-	
-	
-	
-	
-	
+		
 	@PutMapping
 	public Car updateCar(@RequestBody Car car) throws CarNotFoundException {
 	    if (car == null || car.getCarId() == null) {
-	        throw new InvalidRequestException("Car or ID must not be null!");
+	        throw new CarBadResponseException("Car or ID must not be null!");
 	    }
 	    Optional<Car> optionalCar = carRepo.findById(car.getCarId());
 	    if (!optionalCar.isPresent()) {

@@ -1,110 +1,96 @@
 package controllerTests;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+//import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.assignment.cargarage.controllers.CarGarageController;
-import com.assignment.cargarage.dto.Car;
-import com.assignment.cargarage.exceptions.CarBadResponseException;
-import com.assignment.cargarage.exceptions.CarNotFoundException;
-import com.assignment.cargarage.repositories.CarRepository;
+import com.assignment.garage.CarGarageApp;
+import com.assignment.garage.controllers.CarGarageController;
+import com.assignment.garage.dto.Car;
+import com.assignment.garage.exceptions.CarBadResponseException;
+import com.assignment.garage.exceptions.CarNotFoundException;
+import com.assignment.garage.repositories.CarRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+//import org.springframework.boot.test.context.SpringBootTest;
 
-class CarGarageControllerTest {
-
-	//private Car car;
+@SpringBootTest
+@WebMvcTest(CarGarageController.class)
+public class CarGarageControllerTest {
+	CarGarageApp carApp;
+	
 	
 	@Autowired
     MockMvc mockMvc;
-	
     @Autowired
     ObjectMapper mapper;
     
     @MockBean
-    CarRepository carRepository;
+    CarRepo carRepo;
     
     
-    private List<Car> carList;
-    
-//    @BeforeEach
-//    public void setUp() {
-//    	System.out.println("TestSetup");
-//    	this.carList.add(new Car(1L, "Ford","Fuel"));                               
-//    	this.carList.add(new Car(2L, "Toyota","Hybrid"));                               
-//    	this.carList.add(new Car(3L, "Honda","Electric"));
-//    }
-    
-    Car carOne = new Car(1l,"Ford","Fuel");
-    Car carTwo = new Car(2l,"Toyota","Hybrid");
-    Car carThree = new Car(3l,"Honda","Electric");
-    
-    
-      
+    Car car1 = new Car(1l,"Ford","Fuel");
+    Car car2 = new Car(2l,"Honda","Hybrid");
+    Car car3 = new Car(3l,"Tesla","Electric");
     
     @Test
-    public void getCars_success() throws Exception {
-        List<Car> cars = new ArrayList<>(Arrays.asList(carOne, carTwo, carThree));
+    public void setup() {
+    	carApp = new CarGarageApp();
+    }
+    
+    
+    @Test
+    public void getAllCars_success() throws Exception {
+        List<Car> cars = new ArrayList<>(Arrays.asList(car1, car2, car3));
         
-        Mockito.when(carRepository.findAll()).thenReturn(carList);
+        Mockito.when(carRepo.findAll()).thenReturn(cars);
         
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/car")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[2].carMake", is("Honda")));
+                .andExpect(jsonPath("$[2].carMake", is("Tesla")));
     }
     
     
     @Test
     public void getCarById_success() throws Exception {
-        Mockito.when(carRepository.findById(carOne.getCarId())).thenReturn(java.util.Optional.of(carOne));
+        Mockito.when(carRepo.findById(car1.getCarId())).thenReturn(java.util.Optional.of(car1));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/car/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.carMake", is("Ford")));
+                .andExpect(jsonPath("$.carType", is("Ford")));
     }
-    
     
     @Test
     public void createCar_success() throws Exception {
         Car car = Car.builder()
-                .carMake("VWGolf")
+                .carMake("Toyota")
                 .carType("Fuel")
                 .build();
 
-        Mockito.when(carRepository.save(car)).thenReturn(car);
+        Mockito.when(carRepo.save(car)).thenReturn(car);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/car")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,24 +100,45 @@ class CarGarageControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.carMake", is("VWGolf")));
+                .andExpect(jsonPath("$.carMake", is("Toyota")));
         }
     
     
     @Test
-    public void updateCar_nullId() throws Exception {
-    	Car car = Car.builder()
-                .carMake("VWGolf")
+    public void updateCar_success() throws Exception {
+        Car updatedCar = Car.builder()
+                .carId(1l)
+                .carMake("Ford")
                 .carType("Fuel")
                 .build();
 
-        Mockito.when(carRepository.save(car)).thenReturn(car);
+        Mockito.when(carRepo.findById(car1.getCarId())).thenReturn(Optional.of(car1));
+        Mockito.when(carRepo.save(updatedCar)).thenReturn(updatedCar);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/car")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(car));
+                .content(this.mapper.writeValueAsString(updatedCar));
 
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.carMake", is("Ford")));
+    }
+    
+    
+    
+    @Test
+    public void updateCar_nullId() throws Exception {
+        Car updatedCar = Car.builder()
+                .carMake("Nissan")
+                .carType("Fuel")
+                .build();
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/car")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(updatedCar));
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
@@ -142,18 +149,19 @@ class CarGarageControllerTest {
         }
 
     @Test
-    public void updateCar_notFound() throws Exception {
-    	Car car = Car.builder()
-                .carMake("VWGolf")
+    public void updateCar_recordNotFound() throws Exception {
+        Car updatedCar = Car.builder()
+                .carId(5l)
+                .carMake("Renault")
                 .carType("Fuel")
                 .build();
 
-        Mockito.when(carRepository.save(car)).thenReturn(car);
+        Mockito.when(carRepo.findById(updatedCar.getCarId())).thenReturn(null);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/car")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(car));
+                .content(this.mapper.writeValueAsString(updatedCar));
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
@@ -163,9 +171,11 @@ class CarGarageControllerTest {
             assertEquals("Car with ID 5 does not exist.", result.getResolvedException().getMessage()));
     }
     
+    
+    
     @Test
     public void deleteCarById_success() throws Exception {
-        Mockito.when(carRepository.findById(carOne.getCarId())).thenReturn(Optional.of(carTwo));
+        Mockito.when(carRepo.findById(car2.getCarId())).thenReturn(Optional.of(car2));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/car/2")
@@ -175,7 +185,7 @@ class CarGarageControllerTest {
 
     @Test
     public void deleteCarById_notFound() throws Exception {
-        Mockito.when(carRepository.findById(5l)).thenReturn(null);
+        Mockito.when(carRepo.findById(5l)).thenReturn(null);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/car/2")
@@ -186,7 +196,5 @@ class CarGarageControllerTest {
         .andExpect(result ->
                 assertEquals("Car with ID 5 does not exist.", result.getResolvedException().getMessage()));
     }
+    
 }
-
-
-
