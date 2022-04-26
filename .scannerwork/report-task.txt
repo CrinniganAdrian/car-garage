@@ -1,0 +1,6 @@
+projectKey=car-garage
+serverUrl=http://localhost:9000
+serverVersion=9.4.0.54424
+dashboardUrl=http://localhost:9000/dashboard?id=car-garage
+ceTaskId=AYBoOp-gIc8w_uP8F2yG
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYBoOp-gIc8w_uP8F2yG
